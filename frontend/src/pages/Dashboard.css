@@ -1,0 +1,103 @@
+.dashboard-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff8f0;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 16px 0 #a1887f22;
+  text-align: center;
+}
+
+.user-welcome {
+  background: #e8f5e8;
+  border: 1px solid #4caf50;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.user-welcome p {
+  margin: 0;
+  color: #2e7d32;
+}
+
+.user-welcome a {
+  color: #2e7d32;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.user-welcome a:hover {
+  text-decoration: underline;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.auth-link-btn {
+  background: #a0522d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.auth-link-btn:hover {
+  background: #6d3b1a;
+  transform: translateY(-2px);
+}
+
+.auth-link-btn.register {
+  background: #4caf50;
+}
+
+.auth-link-btn.register:hover {
+  background: #388e3c;
+}
+
+.dashboard-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.dashboard-card {
+  background: #f8e5d1;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px #a1887f33;
+  padding: 2rem 1.5rem;
+  width: 180px;
+  text-decoration: none;
+  color: #4e342e;
+  transition: background 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+.dashboard-card:hover {
+  background: #e0c3a3;
+  transform: translateY(-4px) scale(1.04);
+}
+.dashboard-card span {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+.dashboard-card h3 {
+  margin: 0.5rem 0 0.25rem 0;
+}
+.dashboard-card p {
+  font-size: 0.98rem;
+  color: #7b5e47;
+}
