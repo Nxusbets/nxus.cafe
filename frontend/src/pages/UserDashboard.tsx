@@ -1,52 +1,55 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { DatabaseService, type Order as RealOrder } from '../services/databaseService';
 import './UserDashboard.css';
 
-interface Order {
-  id: number;
-  date: string;
-  total: number;
-  status: 'preparando' | 'listo' | 'entregado';
-  items: string[];
-}
+type PointsHistoryEntry = {
+  id?: string;
+  date?: string;
+  description?: string;
+  points: number;
+  type: 'earn' | 'redeem' | string;
+};
+
+
 
 export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState('perfil');
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  // Datos simulados
-  const mockOrders: Order[] = [
-    {
-      id: 1,
-      date: '2025-09-12',
-      total: 85,
-      status: 'listo',
-      items: ['Espresso', 'Cheesecake']
-    },
-    {
-      id: 2,
-      date: '2025-09-10',
-      total: 55,
-      status: 'entregado',
-      items: ['Frappé Vainilla']
-    },
-    {
-      id: 3,
-      date: '2025-09-08',
-      total: 120,
-      status: 'entregado',
-      items: ['Latte', 'Red Velvet', 'Americano']
-    }
-  ];
 
-  const mockPointsHistory = [
-    { date: '2025-09-12', points: 8, description: 'Compra - Espresso + Cheesecake' },
-    { date: '2025-09-10', points: 5, description: 'Compra - Frappé Vainilla' },
-    { date: '2025-09-08', points: 12, description: 'Compra - Latte + Red Velvet + Americano' },
-    { date: '2025-09-01', points: 50, description: 'Puntos de bienvenida' }
-  ];
+  const [orders, setOrders] = useState<RealOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    console.log('Fetching orders for user:', user.id);
+    setOrdersLoading(true);
+    DatabaseService.getUserOrders(user.id)
+      .then(fetchedOrders => {
+        console.log('Fetched orders:', fetchedOrders);
+        setOrders(fetchedOrders);
+      })
+      .catch(error => {
+        console.error('Error fetching orders:', error);
+      })
+      .finally(() => setOrdersLoading(false));
+  }, [user]);
+
+  const [pointsHistory, setPointsHistory] = useState<PointsHistoryEntry[]>([]);
+  const [pointsLoading, setPointsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    setPointsLoading(true);
+    const fetchPointsHistory: (id: string) => Promise<PointsHistoryEntry[]> =
+      (DatabaseService as any).getPointsHistory
+        ? (DatabaseService as any).getPointsHistory.bind(DatabaseService)
+        : () => Promise.resolve([]);
+    fetchPointsHistory(user.id).then(setPointsHistory).finally(() => setPointsLoading(false));
+  }, [user]);
 
   useEffect(() => {
     if (!user) {
@@ -65,18 +68,22 @@ export default function UserDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'preparando': return '#ff9800';
-      case 'listo': return '#4caf50';
-      case 'entregado': return '#2196f3';
+      case 'pending': return '#ff9800';
+      case 'preparing': return '#ff9800';
+      case 'ready': return '#4caf50';
+      case 'delivered': return '#2196f3';
+      case 'cancelled': return '#9e9e9e';
       default: return '#9e9e9e';
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'preparando': return '⏳ Preparando';
-      case 'listo': return '✅ Listo para recoger';
-      case 'entregado': return '🚶‍♂️ Entregado';
+      case 'pending': return '⏳ Pendiente';
+      case 'preparing': return '👨‍🍳 Preparando';
+      case 'ready': return '✅ Listo para recoger';
+      case 'delivered': return '🚶‍♂️ Entregado';
+      case 'cancelled': return '❌ Cancelado';
       default: return status;
     }
   };
@@ -101,31 +108,26 @@ export default function UserDashboard() {
       </header>
 
       <nav className="dashboard-nav">
-        <button
-          className={`nav-tab ${activeTab === 'perfil' ? 'active' : ''}`}
-          onClick={() => setActiveTab('perfil')}
-        >
-          👤 Perfil
-        </button>
-        <button
-          className={`nav-tab ${activeTab === 'pedidos' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pedidos')}
-        >
-          📦 Pedidos
-        </button>
-        <button
-          className={`nav-tab ${activeTab === 'puntos' ? 'active' : ''}`}
-          onClick={() => setActiveTab('puntos')}
-        >
-          ⭐ Puntos
-        </button>
-        <button
-          className={`nav-tab ${activeTab === 'promociones' ? 'active' : ''}`}
-          onClick={() => setActiveTab('promociones')}
-        >
-          🎁 Promociones
-        </button>
+        <button className={`nav-tab ${activeTab === 'perfil' ? 'active' : ''}`} onClick={() => setActiveTab('perfil')}>Perfil</button>
+        <button className={`nav-tab ${activeTab === 'pedidos' ? 'active' : ''}`} onClick={() => setActiveTab('pedidos')}>Pedidos</button>
+        <button className={`nav-tab ${activeTab === 'puntos' ? 'active' : ''}`} onClick={() => setActiveTab('puntos')}>Puntos</button>
+        <button className={`nav-tab ${activeTab === 'promociones' ? 'active' : ''}`} onClick={() => setActiveTab('promociones')}>Promociones</button>
       </nav>
+
+      {/* Dropdown visible on mobile (kept outside .dashboard-nav) */}
+      <div className="dropdown" aria-hidden={false}>
+        <select
+          className="dropdown-select"
+          value={activeTab}
+          onChange={(e) => setActiveTab(e.target.value)}
+          aria-label="Navegación del usuario"
+        >
+          <option value="perfil">Perfil</option>
+          <option value="pedidos">Pedidos</option>
+          <option value="puntos">Puntos</option>
+          <option value="promociones">Promociones</option>
+        </select>
+      </div>
 
       <main className="dashboard-content">
         {activeTab === 'perfil' && (
@@ -146,7 +148,7 @@ export default function UserDashboard() {
             <div className="stats-grid">
               <div className="stat-card">
                 <h4>Total Pedidos</h4>
-                <span className="stat-number">{mockOrders.length}</span>
+                <span className="stat-number">{orders.length}</span>
               </div>
               <div className="stat-card">
                 <h4>Puntos Acumulados</h4>
@@ -165,31 +167,39 @@ export default function UserDashboard() {
         {activeTab === 'pedidos' && (
           <div className="orders-section">
             <h2>Mis Pedidos</h2>
-            <div className="orders-list">
-              {mockOrders.map(order => (
-                <div key={order.id} className="order-card">
-                  <div className="order-header">
-                    <span className="order-id">Pedido #{order.id}</span>
-                    <span
-                      className="order-status"
-                      style={{ backgroundColor: getStatusColor(order.status) }}
-                    >
-                      {getStatusText(order.status)}
-                    </span>
+            {ordersLoading ? (
+              <div style={{padding:'2rem',textAlign:'center'}}>Cargando pedidos...</div>
+            ) : (
+              <div className="orders-list">
+                {!orders ? (
+                  <div style={{padding:'2rem',textAlign:'center',color:'#888'}}>Error al cargar pedidos.</div>
+                ) : orders.length === 0 ? (
+                  <div style={{padding:'2rem',textAlign:'center',color:'#888'}}>No tienes pedidos aún.</div>
+                ) : orders.map(order => (
+                  <div key={order.id} className="order-card">
+                    <div className="order-header">
+                      <span className="order-id">Pedido #{order.id?.slice(-6) || ''}</span>
+                      <span
+                        className="order-status"
+                        style={{ backgroundColor: getStatusColor(order.status) }}
+                      >
+                        {getStatusText(order.status)}
+                      </span>
+                    </div>
+                    <div className="order-details">
+                      <p>📅 {order.createdAt ? new Date(order.createdAt).toLocaleDateString('es-ES') : ''}</p>
+                      <p>🛒 {order.items.map(i => i.productName).join(', ')}</p>
+                      <p>💰 ${order.total}</p>
+                    </div>
+                    {order.status === 'ready' && (
+                      <button className="pickup-btn">
+                        Confirmar Recogida
+                      </button>
+                    )}
                   </div>
-                  <div className="order-details">
-                    <p>📅 {new Date(order.date).toLocaleDateString('es-ES')}</p>
-                    <p>🛒 {order.items.join(', ')}</p>
-                    <p>💰 ${order.total}</p>
-                  </div>
-                  {order.status === 'listo' && (
-                    <button className="pickup-btn">
-                      Confirmar Recogida
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -207,13 +217,19 @@ export default function UserDashboard() {
             <div className="points-history">
               <h3>Historial de Puntos</h3>
               <div className="history-list">
-                {mockPointsHistory.map((entry, index) => (
-                  <div key={index} className="history-item">
+                {pointsLoading ? (
+                  <div style={{padding:'2rem',textAlign:'center'}}>Cargando historial...</div>
+                ) : pointsHistory.length === 0 ? (
+                  <div style={{padding:'2rem',textAlign:'center',color:'#888'}}>No hay movimientos de puntos.</div>
+                ) : pointsHistory.map((entry, index) => (
+                  <div key={entry.id || index} className="history-item">
                     <div className="history-info">
-                      <span className="history-date">{new Date(entry.date).toLocaleDateString('es-ES')}</span>
+                      <span className="history-date">{entry.date ? new Date(entry.date).toLocaleDateString('es-ES') : ''}</span>
                       <span className="history-description">{entry.description}</span>
                     </div>
-                    <span className="history-points">+{entry.points}</span>
+                    <span className="history-points" style={{color: entry.type === 'redeem' ? '#e74c3c' : '#4caf50'}}>
+                      {entry.type === 'redeem' ? '-' : '+'}{entry.points}
+                    </span>
                   </div>
                 ))}
               </div>

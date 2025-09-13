@@ -48,6 +48,22 @@ export interface OrderItem {
 }
 
 export class DatabaseService {
+  // Obtener todos los clientes/usuarios registrados
+  static async getCustomers(): Promise<any[]> {
+    try {
+      const usersRef = collection(db, 'users');
+      const querySnapshot = await getDocs(usersRef);
+      return querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        uid: doc.id,
+        createdAt: doc.data().createdAt?.toDate?.() || new Date(),
+        lastLogin: doc.data().lastLogin?.toDate?.() || new Date(),
+      }));
+    } catch (error) {
+      console.error('Error getting customers:', error);
+      return [];
+    }
+  }
   // Products CRUD operations
   static async getProducts(): Promise<Product[]> {
     try {
@@ -148,19 +164,22 @@ export class DatabaseService {
   static async getUserOrders(userId: string): Promise<Order[]> {
     try {
       const ordersRef = collection(db, 'orders');
+      // Simplificamos la consulta para que funcione sin índice compuesto
       const q = query(
         ordersRef,
-        where('userId', '==', userId),
-        orderBy('createdAt', 'desc')
+        where('userId', '==', userId)
       );
       const querySnapshot = await getDocs(q);
 
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(),
-        updatedAt: doc.data().updatedAt?.toDate()
-      })) as Order[];
+      // Ordenamos los resultados en el cliente
+      return querySnapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate(),
+          updatedAt: doc.data().updatedAt?.toDate()
+        }))
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()) as Order[];
     } catch (error) {
       console.error('Error getting user orders:', error);
       return [];
@@ -248,6 +267,40 @@ export class DatabaseService {
     } catch (error) {
       console.error('Error getting total customers:', error);
       return 0;
+    }
+  }
+
+  // Points History
+  static async getPointsHistory(userId: string): Promise<Array<{
+    id: string;
+    date: Date;
+    description: string;
+    points: number;
+    type: 'earn' | 'redeem';
+  }>> {
+    try {
+      const pointsRef = collection(db, 'pointsHistory');
+      const q = query(
+        pointsRef,
+        where('userId', '==', userId)
+      );
+      const querySnapshot = await getDocs(q);
+
+      return querySnapshot.docs
+        .map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            date: data.date?.toDate() || new Date(),
+            description: data.description || '',
+            points: data.points || 0,
+            type: data.type as 'earn' | 'redeem',
+          };
+        })
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+    } catch (error) {
+      console.error('Error getting points history:', error);
+      return [];
     }
   }
 }

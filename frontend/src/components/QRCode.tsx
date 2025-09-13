@@ -15,16 +15,12 @@ export default function QRCodeComponent({ productId, productName, size = 100, cl
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    // Crear datos del QR con información del producto
-    const qrData = JSON.stringify({
-      type: 'product',
-      productId,
-      productName,
-      timestamp: Date.now()
-    });
+  // El QR debe llevar a la URL del producto para agregarlo al carrito
+  // Por ejemplo: https://tudominio.com/product/{productId}
+  const baseUrl = window.location.origin;
+  const qrUrl = `${baseUrl}/product/${productId}`;
 
-    // Generar código QR
-    QRCode.toCanvas(canvasRef.current, qrData, {
+  QRCode.toCanvas(canvasRef.current, qrUrl, {
       width: size,
       color: {
         dark: '#8B4513', // Color café para el QR

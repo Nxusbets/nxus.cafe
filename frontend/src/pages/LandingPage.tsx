@@ -1,8 +1,23 @@
 import './LandingPage.css';
+
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react';
+
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const [showGuestModal, setShowGuestModal] = useState(false);
+
+
+  const handleOrderClick = () => {
+    if (isAuthenticated) {
+      navigate('/order');
+    } else {
+      setShowGuestModal(true);
+    }
+  };
 
   return (
     <div className="landing-page">
@@ -11,12 +26,29 @@ export default function LandingPage() {
         <div className="hero-content">
           <h1>¡Bienvenido a Nxus Café!</h1>
           <p>El aroma del mejor café en cada taza. Disfruta de una experiencia única en nuestro acogedor espacio.</p>
-          <button className="hero-btn" onClick={() => navigate('/order')}>Ordenar Ahora</button>
+          <button className="hero-btn" onClick={handleOrderClick}>Ordenar Ahora</button>
         </div>
         <div className="hero-image">
           <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Cafetería Nxus" />
         </div>
       </section>
+
+      {/* Modal para usuarios no autenticados */}
+      {showGuestModal && (
+        <div className="modal-overlay">
+          <div className="modal guest-modal">
+            <h2>¿Quieres disfrutar de todos los beneficios?</h2>
+            <p>Para acumular puntos, ver tu historial y recibir promociones, crea una cuenta o inicia sesión.</p>
+            <div className="modal-actions">
+              <button className="cta-btn" onClick={() => navigate('/register')}>Crear Cuenta</button>
+              <button className="cta-btn secondary" onClick={() => navigate('/login')}>Iniciar Sesión</button>
+              <button className="cta-btn ghost" onClick={() => { setShowGuestModal(false); navigate('/order'); }}>Continuar como Invitado</button>
+            </div>
+            <p className="guest-warning">Si continúas como invitado <b>no acumularás puntos</b> ni podrás ver tu historial de pedidos.</p>
+            <button className="modal-close" onClick={() => setShowGuestModal(false)}>×</button>
+          </div>
+        </div>
+      )}
 
       {/* Menú Section */}
       <section className="menu-section">
@@ -50,7 +82,7 @@ export default function LandingPage() {
             </ul>
           </div>
         </div>
-        <button className="menu-btn" onClick={() => navigate('/order')}>Ver Menú Completo</button>
+  <button className="menu-btn" onClick={() => navigate('/menu')}>Ver Menú Completo</button>
       </section>
 
       {/* Características */}
@@ -102,11 +134,15 @@ export default function LandingPage() {
         </div>
       </section>
 
+
       {/* Llamado a la Acción */}
       <section className="cta-section">
         <h2>¡Empieza tu Experiencia Cafetera!</h2>
         <p>Únete a nuestra comunidad de amantes del café.</p>
-        <button className="cta-btn" onClick={() => navigate('/order')}>Crear Cuenta y Ordenar</button>
+        <div className="cta-actions">
+          <button className="cta-btn" onClick={() => navigate('/order')}>Crear Cuenta y Ordenar</button>
+          <button className="cta-btn secondary" onClick={() => navigate('/login')}>Iniciar Sesión</button>
+        </div>
       </section>
 
       {/* Footer */}

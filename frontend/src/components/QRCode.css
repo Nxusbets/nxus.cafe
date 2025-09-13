@@ -3,16 +3,15 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 10px;
+  padding: 8px;
   background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
   border-radius: 8px;
   border: 2px solid #8B4513;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.18s ease;
 }
 
 .qr-code-container:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.18);
 }
 
 .qr-code-canvas {
@@ -23,21 +22,15 @@
 
 .qr-label {
   text-align: center;
-  font-size: 10px;
+  font-size: 12px;
   color: #8B4513;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .qr-code-container {
-    padding: 8px;
-    gap: 6px;
-  }
-
-  .qr-label {
-    font-size: 9px;
-  }
+  .qr-code-container { padding: 8px; gap: 6px; width: 100%; }
+  .qr-label { font-size: 11px; }
 }

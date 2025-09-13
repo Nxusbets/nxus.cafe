@@ -9,7 +9,10 @@
 .waiter-header {
   background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
   color: white;
-  padding: 1.5rem 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: calc(var(--gutter) + 1rem);
+  padding-right: calc(var(--gutter) + 1rem);
   display: flex;
   justify-content: space-between;
   align-items: center;

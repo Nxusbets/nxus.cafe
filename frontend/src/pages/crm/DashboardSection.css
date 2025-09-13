@@ -1,0 +1,133 @@
+.recent-orders .orders-table {
+  width: 100%;
+}
+
+.recent-orders .table-header,
+.recent-orders .table-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 90px 120px 80px 160px;
+  gap: 16px;
+  .orders-table { display: grid; gap: 8px; }
+
+  .table-header, .table-row {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 220px minmax(160px, 1fr) 90px 120px 90px 160px;
+    column-gap: 12px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+  }
+
+  .table-header {
+    font-weight: 700;
+    color: #333;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* Metrics (top cards) */
+  .metrics-grid {
+    display: grid;
+    /* ultra-compact: allow many tiny cards */
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .metric-card {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 4px 6px;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.03);
+    min-height: 32px;
+    justify-content: flex-start;
+  }
+
+  .metric-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .metric-info h3 {
+    margin: 0;
+    font-size: 0.75rem; /* compact */
+    line-height: 1;
+    font-weight: 600;
+  }
+
+  .metric-info p { margin: 0; color: #8b98a5; font-size: 0.6rem; }
+
+  .metric-change { display: inline-block; margin-top: 2px; padding: 1px 4px; border-radius: 999px; font-size: 0.55rem; }
+
+  .table-row {
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+  }
+
+  .customer-name {
+    font-weight: 600;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .order-items {
+    color: #666;
+    font-size: 0.95rem;
+    white-space: normal;
+    word-break: break-word;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 4.5em; /* allow ~3 lines */
+    overflow: hidden;
+  }
+
+  .order-items span { display: block; }
+
+  .order-total { color: #27ae60; font-weight: 700; }
+
+  .order-status { justify-self: start; }
+
+  .order-time { color: #777; }
+
+  .order-actions { display: flex; gap: 6px; justify-self: end; }
+
+  .action-btn {
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 1000px) {
+    .table-header, .table-row { grid-template-columns: 180px minmax(120px, 1fr) 80px 100px 80px 140px; }
+  }
+
+  @media (max-width: 760px) {
+    /* On narrow screens, collapse some columns to keep layout usable */
+    .table-header, .table-row {
+      grid-template-columns: 1fr 1fr 80px;
+      grid-auto-rows: auto;
+    }
+    /* Hide less-critical headers */
+    .table-header span:nth-child(4), .table-header span:nth-child(5) { display: none; }
+    /* Map cells into new grid positions */
+    .customer-name { grid-column: 1 / 2; }
+    .order-items { grid-column: 2 / 3; }
+    .order-total { grid-column: 3 / 4; }
+    .order-status { grid-column: 2 / 3; }
+    .order-time, .order-actions { grid-column: 3 / 4; }
+  }
+}

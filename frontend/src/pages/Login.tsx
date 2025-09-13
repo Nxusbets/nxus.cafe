@@ -25,7 +25,12 @@ export default function Login() {
 
     try {
       await login(formData.email, formData.password);
-      navigate('/user-dashboard');
+      // If the logged-in email is the special admin email, redirect to CRM
+      if (formData.email && formData.email.trim().toLowerCase() === 'jericho888873@gmail.com') {
+        navigate('/crm');
+      } else {
+        navigate('/user-dashboard');
+      }
     } catch (error: any) {
       alert(error.message || 'Error al iniciar sesión');
     } finally {
