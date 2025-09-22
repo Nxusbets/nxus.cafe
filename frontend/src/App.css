@@ -1,10 +1,4 @@
-/* Root app container */
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding-left: var(--gutter);
-  padding-right: var(--gutter);
-}
+ 
 
 /* Global body resets and theme */
 body {
