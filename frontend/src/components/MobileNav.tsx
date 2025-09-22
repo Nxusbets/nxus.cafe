@@ -21,7 +21,7 @@ export default function MobileNav() {
         <span className="nav-label">Inicio</span>
       </button>
       <button
-        className={location.pathname === '/menu' ? 'active' : ''}
+        className={location.pathname === '/menu' ? 'active hide-mobile-menu' : 'hide-mobile-menu'}
         onClick={() => navigate('/menu')}
         aria-label="Menú"
       >
