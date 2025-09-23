@@ -7,8 +7,10 @@ export default function MobileNav() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
 
-  // Only show on mobile
-  // You can use CSS media queries to hide/show this component
+  // Ocultar en rutas de CRM/admin
+  if (location.pathname.startsWith('/crm')) {
+    return null;
+  }
 
   return (
     <nav className="mobile-nav">

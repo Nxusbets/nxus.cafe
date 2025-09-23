@@ -1,3 +1,40 @@
+/* Mejor contraste y legibilidad para el modal de invitado */
+.guest-modal {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem 1rem 1rem 1rem;
+  max-width: 400px;
+  width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  color: #3d2c20;
+}
+.modal-actions .cta-btn {
+  background: #fff;
+  color: #a0522d;
+  border: 2px solid #e0c3a3;
+  padding: 1rem 1rem;
+  font-size: 1.05rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(160,82,45,0.18);
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 0.7rem;
+  font-weight: 600;
+}
+.modal-actions .cta-btn.secondary {
+  background: #a0522d;
+  color: #fff;
+  border: 2px solid #a0522d;
+}
+.modal-actions .cta-btn.ghost {
+  background: #f8f5f2;
+  color: #a0522d;
+  border: 2px solid #e0c3a3;
+}
 @media (max-width: 600px) {
   .landing-page {
     padding: 0;
@@ -654,7 +691,8 @@ body, .landing-page {
 }
 
 /* Login modal */
-.login-modal-overlay {
+.login-modal-overlay,
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -664,7 +702,7 @@ body, .landing-page {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   animation: fadeIn 0.3s ease;
 }
 .login-modal {
